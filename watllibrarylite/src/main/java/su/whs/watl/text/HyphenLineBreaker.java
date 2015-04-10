@@ -1,4 +1,4 @@
-package su.whs.watl.samples;
+package su.whs.watl.text;
 
 /**
  * created by igor n. boulliev on 03.04.15.
@@ -6,12 +6,9 @@ package su.whs.watl.samples;
 
 import android.annotation.SuppressLint;
 
-import java.io.DataInputStream;
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
 
-import su.whs.watl.text.LineBreaker;
 import su.whs.watl.text.hyphen.HyphenPattern;
 
 
@@ -67,28 +64,10 @@ public class HyphenLineBreaker extends LineBreaker {
     private int rightMin;
 
     public HyphenLineBreaker(HyphenPattern pattern) {
-        this.trie = HyphenPattern.createTrie(pattern.patternObject);
+        this.trie = pattern.getTrie();
         this.leftMin = pattern.leftMin;
         this.rightMin = pattern.rightMin;
     }
-
-    public HyphenLineBreaker(HyphenPattern pattern, DataInputStream in) throws IOException {
-        this.trie = new HyphenPattern.TrieNode(in);
-        this.leftMin = pattern.leftMin;
-        this.rightMin = pattern.rightMin;
-    }
-
-    public static LineBreaker getInstance(HyphenPattern pattern, DataInputStream in) throws IOException {
-        synchronized (cached) {
-            if (!cached.containsKey(pattern)) {
-                cached.put(pattern, new HyphenLineBreaker(pattern, in));
-                return cached.get(pattern);
-            }
-
-            return cached.get(pattern);
-        }
-    }
-
 
     public static LineBreaker getInstance(HyphenPattern hyphenationPattern) {
         synchronized (cached) {
@@ -100,8 +79,6 @@ public class HyphenLineBreaker extends LineBreaker {
             return cached.get(hyphenationPattern);
         }
     }
-
-    // TODO: change to statically created TrieNode for each patternObject
 
 
     private void hyphenate(char[] word, int[] hyphens) {
